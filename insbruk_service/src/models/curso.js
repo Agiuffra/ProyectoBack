@@ -18,7 +18,7 @@ const cursoModel = (conexion) => {
                 allowNull: false
             },
             curso_aforo: {
-                type: DataTypes.NUMBER,
+                type: DataTypes.INTEGER,
                 allowNull: false
             }
         },

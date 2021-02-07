@@ -18,7 +18,7 @@ const direccionModel = (conexion) => {
                 allowNull: false,
             },
             direccion_numero: {
-                type: DataTypes.NUMBER,
+                type: DataTypes.INTEGER,
                 allowNull: false,
             }
         },
