@@ -45,6 +45,10 @@ const usuarioModel = (conexion) => {
                 type: DataTypes.STRING(10),
                 allowNull: false
             },
+            usuario_direccion : {
+                type: DataTypes.STRING(100),
+                allowNull: false
+            },
             usuario_hash : {
                 type: DataTypes.TEXT
             },

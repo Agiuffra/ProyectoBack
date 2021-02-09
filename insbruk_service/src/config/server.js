@@ -2,6 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { conexion } = require("./sequelize");
 
+// Llamar a los routers
+const curso_router = require('../routes/curso');
+const grado_router = require('../routes/grado');
+const usuario_router = require('../routes/usuario');
+
 module.exports = class Server {
   constructor() {
     this.app = express();
@@ -28,6 +33,7 @@ module.exports = class Server {
         message: " Bienvenido al API del aula virtual INSBRUK 😂",
       });
     });
+    this.app.use("", curso_router, grado_router, usuario_router);
   }
   start() {
     this.app.listen(this.puerto, () => {
