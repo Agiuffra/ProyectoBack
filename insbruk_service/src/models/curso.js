@@ -17,6 +17,14 @@ const cursoModel = (conexion) => {
                 type: DataTypes.TEXT,
                 allowNull: false
             },
+            curso_horaini: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            curso_horafin: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
             curso_aforo: {
                 type: DataTypes.INTEGER,
                 allowNull: false

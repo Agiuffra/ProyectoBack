@@ -14,8 +14,12 @@ const gradoModel = (conexion) => {
                 allowNull: false
             },
             grado_numero: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(10),
                 allowNull: false
+            },
+            grado_foto: {
+                type: DataTypes.TEXT,
+                allowNull: true
             }
         },
         {

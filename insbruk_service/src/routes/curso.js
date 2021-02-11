@@ -4,6 +4,6 @@ const curso_router = Router();
 
 curso_router.post('/curso', curso_controller.crearCurso);
 curso_router.get('/curso', curso_controller.listarCursos);
-curso_router.get('/cursoId/:curso_id', curso_controller.listarCursoById);
+curso_router.get('/cursoFilter/:nombre', curso_controller.listarCursoByName);
 
 module.exports = curso_router;
