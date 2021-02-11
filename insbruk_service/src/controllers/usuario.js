@@ -1,4 +1,5 @@
 const { Usuario, UsuarioCurso, Curso } = require('../config/sequelize');
+const { subirArchivo, eliminarArchivoFirebase } = require('../utils/Firebase');
 const { Op } = require('sequelize');
 
 const registrarUsuario = async (req, res) => {
@@ -201,6 +202,50 @@ const matricularUsuario = async (req, res) => {
         return res.status(500)
     }
 }
+const subirFotoUsuario = async (req, res) => {
+    try {
+        let { nombre, apellido } = req.query;
+        let usuarioEncontrado = await Usuario.findOne({
+            where: {
+                usuario_nombre: nombre,
+                usuario_apep: apellido
+            }
+        });
+        if (usuarioEncontrado) {
+            let subida = await subirArchivo(req.file);
+            await usuarioEncontrado.update({
+                usuario_foto: subida[0]
+            },{
+                where: {
+                    usuario_nombre: nombre,
+                    usuario_apep: apellido
+                }
+            });
+            let usuarioActualizado = await Usuario.findOne({
+                where: {
+                    usuario_nombre: nombre,
+                    usuario_apep: apellido
+                }
+            });
+            return res.status(201).json({
+                ok: true,
+                message: "se subió la foto del usuario con éxito",
+                content: usuarioActualizado
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            message: "usuario no encontrado",
+            content: null
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error al actualizar la imagen",
+            content: error
+        });
+    }
+}
 
 module.exports = {
     registrarUsuario,
@@ -210,4 +255,5 @@ module.exports = {
     editarUsuarioByName,
     eliminarUsuarioByName,
     matricularUsuario,
+    subirFotoUsuario,
 }
