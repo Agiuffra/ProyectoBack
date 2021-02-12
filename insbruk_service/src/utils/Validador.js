@@ -49,7 +49,8 @@ const validarAdmin = (req, res, next) => {
 const validarProfe = (req, res, next) => {
   let token = req.headers.authorization.split(" ")[1];
   let respuesta = verificarToken(token);
-  console.log(respuesta);
+  // console.log(respuesta);
+  req.profesor = respuesta.apellidos;
   if (respuesta.tipo != "profe") {
     return res.status(401).json({
       ok: false,
@@ -62,8 +63,9 @@ const validarProfe = (req, res, next) => {
 const validarAdminAndProfe = (req, res, next) => {
   let token = req.headers.authorization.split(" ")[1];
   let respuesta = verificarToken(token);
-  console.log(respuesta);
-  if (respuesta.tipo != "profe" || respuesta.tipo != "admin") {
+  console.log(respuesta.tipo);
+  if (respuesta.tipo != "profe" && respuesta.tipo != "admin") {
+    console.log("es admin");
     return res.status(401).json({
       ok: false,
       content: "No estas autorizado para realizar esta solicitud",

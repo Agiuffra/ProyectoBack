@@ -4,7 +4,7 @@ const curso_modelo = require('../models/curso');
 const usuario_modelo = require('../models/usuario');
 // const direccion_modelo = require('../models/direccion');
 const grado_modelo = require('../models/grado');
-const usuario_curso_modelo = require('../models/usuario_curso');
+const notas_modelo = require('../models/notas');
 
 const conexion = new Sequelize("insbruk", "root", "Ut3c7599", {
     host: "127.0.0.1",
@@ -20,13 +20,13 @@ const Curso = curso_modelo(conexion);
 const Usuario = usuario_modelo(conexion);
 // const Direccion = direccion_modelo(conexion);
 const Grado = grado_modelo(conexion);
-const UsuarioCurso = usuario_curso_modelo(conexion);
+const Notas = notas_modelo(conexion);
 
-Curso.hasMany(UsuarioCurso, { foreignKey: { name: "curso_id", allowNull: false } });
-UsuarioCurso.belongsTo(Curso, { foreignKey: "curso_id" });
+Curso.hasMany(Notas, { foreignKey: { name: "curso_id", allowNull: false } });
+Notas.belongsTo(Curso, { foreignKey: "curso_id" });
 
-Usuario.hasMany(UsuarioCurso, { foreignKey: { name: "usuario_id", allowNull: false } });
-UsuarioCurso.belongsTo(Usuario, { foreignKey: "usuario_id" });
+Usuario.hasMany(Notas, { foreignKey: { name: "usuario_id", allowNull: false } });
+Notas.belongsTo(Usuario, { foreignKey: "usuario_id" });
 
 Grado.hasMany(Curso, { foreignKey: { name: "grado_id", allowNull: false } });
 Curso.belongsTo(Grado, { foreignKey: "grado_id" });
@@ -43,7 +43,7 @@ module.exports = {
     Usuario,
     // Direccion,
     Grado,
-    UsuarioCurso,
+    Notas,
 };
 
 // NOTA: se eliminó la tabla dirección por separado para facilitar el registro de los usuarios.

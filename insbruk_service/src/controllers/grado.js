@@ -56,11 +56,9 @@ const listarGradoByNumero = async (req, res) => {
         });
     }
 }
-const subirFotoById = (req, res) => { }
 
 module.exports = {
     crearGrado,
     listarGrados,
-    listarGradoByNumero,
-    subirFotoById,
+    listarGradoByNumero
 }

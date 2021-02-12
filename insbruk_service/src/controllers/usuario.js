@@ -1,4 +1,4 @@
-const { Usuario, UsuarioCurso, Curso } = require('../config/sequelize');
+const { Usuario, Notas, Curso } = require('../config/sequelize');
 const { subirArchivo, eliminarArchivoFirebase } = require('../utils/Firebase');
 const { Op } = require('sequelize');
 
@@ -159,48 +159,98 @@ const eliminarUsuarioByName = async (req, res) => {
         });
     }
 }
-const matricularUsuario = async (req, res) => {
-    let { nombre, apellido, curso } = req.query;
-    try {
-        let usuarioMatricula = await Usuario.findOne({
+const subirNotas = async (req, res) => {
+    const { nombre, apellido, curso, nota } = req.query;
+    let alumnoEncontrado = await Usuario.findOne({
+        where: {
+            usuario_nombre: nombre,
+            usuario_apep: apellido
+        }
+    });
+    // console.log(alumnoEncontrado);
+    if (!alumnoEncontrado || alumnoEncontrado.usuario_tipo != "alumno") {
+        return res.json({
+            ok: false,
+            message: "el usuario no existe o no es alumno"
+        });
+    }
+    let cursoEncontrado = await Curso.findOne({
+        where: {
+            curso_nombre: curso
+        }
+    });
+    if (!cursoEncontrado) {
+        return res.json({
+            ok: false,
+            message: "el curso no existe"
+        });
+    }
+    let objNota = {
+        notas_califiacion: nota,
+        notas_profesor: req.profesor,
+        curso_id: cursoEncontrado.curso_id,
+        usuario_id: alumnoEncontrado.usuario_id
+    }
+    let notaNueva = await Notas.create(objNota);
+    return res.json({
+        ok: true,
+        message: "se ha subido una nota correctamente",
+        content: notaNueva
+    });
+}
+const verNotas = async (req, res) => {
+    let notasAlumno = {}
+    const { nombre, apellido, curso } = req.query;
+    if (nombre && apellido) {
+        let alumnoEncontrado = await Usuario.findOne({
             where: {
                 usuario_nombre: nombre,
                 usuario_apep: apellido
             }
         });
-        if (usuarioMatricula) {
-            let cursoMatricula = await Curso.findOne({
-                where: {
-                    curso_nombre : {
-                        [Op.substring]: curso
-                    }
-                }
-            });
-            if (cursoMatricula) {
-                let matriculaCreada = await UsuarioCurso.create({
-                    curso_id: cursoMatricula.curso_id,
-                    usuario_id: usuarioMatricula.usuario_id
-                })
-                return res.status(201).json({
-                    ok: true,
-                    message: "el usuario se ha matriculado en el curso",
-                    content: matriculaCreada
-                });
-            }
-            return res.status(404).json({
+        if (!alumnoEncontrado || alumnoEncontrado.usuario_tipo != "alumno") {
+            return res.json({
                 ok: false,
-                message: "el curso no existe",
-                content: null
+                message: "el usuario no existe o no es alumno"
             });
         }
-        return res.status(404).json({
-            ok: false,
-            message: "el usuario no existe",
-            content: null
+        if (!curso) {
+            notasAlumno = await Notas.findAll({
+                where: {
+                    usuario_id: alumnoEncontrado.usuario_id
+                }
+            });
+        } else {
+            let cursoEncontrado = await Curso.findOne({
+                where: {
+                    curso_nombre: curso
+                }
+            });
+            if (!cursoEncontrado) {
+                return res.json({
+                    ok: false,
+                    message: "el curso no existe"
+                });
+            }
+            notasAlumno = await Notas.findOne({
+                where: {
+                    usuario_id: alumnoEncontrado.usuario_id,
+                    curso_id: cursoEncontrado.curso_id
+                }
+            });
+        }
+        return res.json({
+            ok: true,
+            message: "imprimiendo notas",
+            content: notasAlumno
         });
-    } catch (error) {
-        return res.status(500)
+    } else {
+        return res.json({
+            ok: false,
+            message: "ingrese un alumno"
+        });
     }
+
 }
 const subirFotoUsuario = async (req, res) => {
     try {
@@ -215,7 +265,7 @@ const subirFotoUsuario = async (req, res) => {
             let subida = await subirArchivo(req.file);
             await usuarioEncontrado.update({
                 usuario_foto: subida[0]
-            },{
+            }, {
                 where: {
                     usuario_nombre: nombre,
                     usuario_apep: apellido
@@ -254,6 +304,7 @@ module.exports = {
     mostrarUsuariosByName,
     editarUsuarioByName,
     eliminarUsuarioByName,
-    matricularUsuario,
+    subirNotas,
+    verNotas,
     subirFotoUsuario,
 }
