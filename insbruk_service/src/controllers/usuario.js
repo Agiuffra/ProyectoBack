@@ -185,6 +185,7 @@ const subirNotas = async (req, res) => {
             message: "el curso no existe"
         });
     }
+    // crear otra relación entre usuario y notas
     let objNota = {
         notas_califiacion: nota,
         notas_profesor: req.profesor,
