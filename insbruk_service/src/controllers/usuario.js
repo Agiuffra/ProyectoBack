@@ -67,20 +67,18 @@ const mostrarUsuarios = async (req, res) => {
         });
     }
 }
-const mostrarUsuariosByName = async (req, res) => {
+const mostrarUsuarioById = async (req, res) => {
     try {
-        let { nombre } = req.params;
-        let usuariosEncontrados = await Usuario.findAll({
+        let { id } = req.params;
+        let usuarioEncontrado = await Usuario.findAll({
             where: {
-                usuario_nombre: {
-                    [Op.substring]: nombre
-                }
+                usuario_id: id
             }
         });
         return res.json({
             ok: true,
             message: "imprimiendo usuarios encontrados",
-            content: usuariosEncontrados
+            content: usuarioEncontrado
         });
     } catch (error) {
         return res.status(500).json({
@@ -90,8 +88,8 @@ const mostrarUsuariosByName = async (req, res) => {
         });
     }
 }
-const editarUsuarioByName = async (req, res) => {
-    let { id } = req.query;
+const editarUsuarioById = async (req, res) => {
+    let { id } = req.params;
     try {
         let usuarioEncontrado = await Usuario.findOne({
             where: {
@@ -129,13 +127,12 @@ const editarUsuarioByName = async (req, res) => {
         });
     }
 }
-const eliminarUsuarioByName = async (req, res) => {
-    let { nombre, apellido } = req.query;
+const eliminarUsuarioById = async (req, res) => {
+    let { id } = req.params;
     try {
         let usuarioEliminado = await Usuario.destroy({
             where: {
-                usuario_nombre: nombre,
-                usuario_apep: apellido
+                usuario_id: id
             }
         });
         if (usuarioEliminado != 0) {
@@ -159,14 +156,12 @@ const eliminarUsuarioByName = async (req, res) => {
     }
 }
 const subirNotas = async (req, res) => {
-    const { nombre, apellido, curso, nota } = req.query;
+    const { alumno_id, curso_id, nota } = req.body;
     let alumnoEncontrado = await Usuario.findOne({
         where: {
-            usuario_nombre: nombre,
-            usuario_apep: apellido
+            usuario_id: alumno_id
         }
     });
-    // console.log(alumnoEncontrado);
     if (!alumnoEncontrado || alumnoEncontrado.usuario_tipo != "alumno") {
         return res.json({
             ok: false,
@@ -175,7 +170,7 @@ const subirNotas = async (req, res) => {
     }
     let cursoEncontrado = await Curso.findOne({
         where: {
-            curso_nombre: curso
+            curso_id: curso_id
         }
     });
     if (!cursoEncontrado) {
@@ -186,8 +181,7 @@ const subirNotas = async (req, res) => {
     }
     // crear otra relación entre usuario y notas
     let objNota = {
-        notas_califiacion: nota,
-        notas_profesor: req.profesor,
+        notas_calificacion: nota,
         curso_id: cursoEncontrado.curso_id,
         usuario_id: alumnoEncontrado.usuario_id
     }
@@ -200,12 +194,11 @@ const subirNotas = async (req, res) => {
 }
 const verNotas = async (req, res) => {
     let notasAlumno = {}
-    const { nombre, apellido, curso } = req.query;
-    if (nombre && apellido) {
+    const { alumno_id, curso_id } = req.query;
+    if (alumno_id) {
         let alumnoEncontrado = await Usuario.findOne({
             where: {
-                usuario_nombre: nombre,
-                usuario_apep: apellido
+                usuario_id: alumno_id
             }
         });
         if (!alumnoEncontrado || alumnoEncontrado.usuario_tipo != "alumno") {
@@ -214,7 +207,7 @@ const verNotas = async (req, res) => {
                 message: "el usuario no existe o no es alumno"
             });
         }
-        if (!curso) {
+        if (!curso_id) {
             notasAlumno = await Notas.findAll({
                 where: {
                     usuario_id: alumnoEncontrado.usuario_id
@@ -223,7 +216,7 @@ const verNotas = async (req, res) => {
         } else {
             let cursoEncontrado = await Curso.findOne({
                 where: {
-                    curso_nombre: curso
+                    curso_id: curso_id
                 }
             });
             if (!cursoEncontrado) {
@@ -254,11 +247,10 @@ const verNotas = async (req, res) => {
 }
 const subirFotoUsuario = async (req, res) => {
     try {
-        let { nombre, apellido } = req.query;
+        let { id } = req.params;
         let usuarioEncontrado = await Usuario.findOne({
             where: {
-                usuario_nombre: nombre,
-                usuario_apep: apellido
+                usuario_id: id
             }
         });
         if (usuarioEncontrado) {
@@ -267,14 +259,12 @@ const subirFotoUsuario = async (req, res) => {
                 usuario_foto: subida[0]
             }, {
                 where: {
-                    usuario_nombre: nombre,
-                    usuario_apep: apellido
+                    usuario_id: id
                 }
             });
             let usuarioActualizado = await Usuario.findOne({
                 where: {
-                    usuario_nombre: nombre,
-                    usuario_apep: apellido
+                    usuario_id: id
                 }
             });
             return res.status(201).json({
@@ -301,9 +291,9 @@ module.exports = {
     registrarUsuario,
     loginUsuario,
     mostrarUsuarios,
-    mostrarUsuariosByName,
-    editarUsuarioByName,
-    eliminarUsuarioByName,
+    mostrarUsuarioById,
+    editarUsuarioById,
+    eliminarUsuarioById,
     subirNotas,
     verNotas,
     subirFotoUsuario,

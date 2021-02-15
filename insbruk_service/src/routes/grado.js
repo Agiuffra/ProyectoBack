@@ -4,8 +4,8 @@ const { wachiman, validarAdminAndProfe, validarAdmin } = require('../utils/Valid
 const grado_router = Router();
 
 grado_router.post('/grado', validarAdminAndProfe, grado_controller.crearGrado);
-grado_router.get('/grado', validarAdminAndProfe, grado_controller.listarGrados);
-grado_router.get('/gradoFilter', validarAdminAndProfe, grado_controller.listarGradoById);
+grado_router.get('/grado', grado_controller.listarGrados);
+grado_router.get('/gradoFilter', grado_controller.listarGradoById);
 grado_router.put('/actualizarGrado/:id', validarAdmin, grado_controller.editarGradoById);
 
 module.exports = grado_router;
