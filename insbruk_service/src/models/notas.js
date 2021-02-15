@@ -9,12 +9,8 @@ const notasModel = (conexion) => {
                 autoIncrement: true,
                 primaryKey:true
             },
-            notas_califiacion: {
+            notas_calificacion: {
                 type: DataTypes.INTEGER,
-                allowNull: false
-            },
-            notas_profesor: {
-                type: DataTypes.STRING(20),
                 allowNull: false
             }
         },

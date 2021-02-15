@@ -39,8 +39,8 @@ module.exports = class Server {
     this.app.listen(this.puerto, () => {
       console.log("Servidor corriendo exitosamente!! 😍");
       conexion.sync({
-        // force: true,
-        // alter: true
+        force: true,
+        alter: true
       }).then(() => {
         console.log('Base de datos sincronizada correctamente');
       }).catch((error) => {

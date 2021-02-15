@@ -91,23 +91,22 @@ const mostrarUsuariosByName = async (req, res) => {
     }
 }
 const editarUsuarioByName = async (req, res) => {
-    let { nombre, apellido } = req.query;
+    let { id } = req.query;
     try {
         let usuarioEncontrado = await Usuario.findOne({
             where: {
-                usuario_nombre: nombre,
-                usuario_apep: apellido
+                usuario_id: id
             }
         });
         if (usuarioEncontrado) {
             await usuarioEncontrado.update(req.body, {
                 where: {
-                    usuario_nombre: nombre
+                    usuario_id: id
                 }
             });
             let usuarioActualizado = await Usuario.findOne({
                 where: {
-                    usuario_nombre: nombre
+                    usuario_id: id
                 }
             });
             return res.status(201).json({

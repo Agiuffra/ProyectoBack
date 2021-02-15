@@ -33,19 +33,17 @@ const listarGrados = async (req, res) => {
         })
     }
 }
-const listarGradoByNumero = async (req, res) => {
+const listarGradoById = async (req, res) => {
     try {
-        let { numero } = req.query;
+        let { id } = req.query;
         let gradosEncontrados = await Grado.findAll({
             where: {
-                grado_numero: {
-                    [Op.substring]: numero
-                }
+                grado_id: id
             }
         });
         return res.json({
             ok: true,
-            message: "imprimiendo el/los grado(s) encontrado(s)",
+            message: "imprimiendo el grado encontrado",
             content: gradosEncontrados
         });
     } catch (error) {
@@ -56,9 +54,41 @@ const listarGradoByNumero = async (req, res) => {
         });
     }
 }
+const editarGradoById = async (req, res) => {
+    let { id } = req.params;
+    try {
+        let gradoEncontrado = await Grado.findByPk(id);
+        if (gradoEncontrado) {
+            await gradoEncontrado.update(req.body, {
+                where: {
+                    grado_id: id
+                }
+            });
+            let gradoActualizado = await Grado.findByPk(id);
+            return res.status(201).json({
+                ok: true,
+                message: "grado actualizado",
+                content: gradoActualizado
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            message: "no se ha encontrado el grado",
+            content: null
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ocurrió un error al editar el grado",
+            content: error
+        });
+    }
+}
 
 module.exports = {
     crearGrado,
     listarGrados,
-    listarGradoByNumero
+    listarGradoById,
+    editarGradoById
+
 }

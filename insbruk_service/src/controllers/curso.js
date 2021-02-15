@@ -31,13 +31,11 @@ const listarCursos = (req, res) => {
         });
     });
 }
-const listarCursoByName = (req, res) => {
-    let { nombre } = req.params;
-    Curso.findAll({
+const listarCursoById = (req, res) => {
+    let { id } = req.params;
+    Curso.findOne({
         where: {
-            curso_nombre: {
-                [Op.substring]: nombre
-            }
+            curso_id: id
         }
     }).then((cursosEncontrados) => {
         return res.json({
@@ -53,9 +51,40 @@ const listarCursoByName = (req, res) => {
         });
     });
 }
+const editarCursoById = async (req, res) => {
+    let { id } = req.params;
+    try {
+        let cursoEncontrado = await Curso.findByPk(id);
+        if (cursoEncontrado) {
+            await cursoEncontrado.update(req.body, {
+                where: {
+                    curso_id: id
+                }
+            });
+            let cursoActualizado = await Curso.findByPk(id);
+            return res.status(201).json({
+                ok: true,
+                message: "curso actualizado",
+                content: cursoActualizado
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            message: "no se ha encontrado al curso",
+            content: null
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ocurrió un error al editar el curso",
+            content: error
+        });
+    }
+}
 
 module.exports = {
     crearCurso,
     listarCursos,
-    listarCursoByName,
+    listarCursoById,
+    editarCursoById
 }
