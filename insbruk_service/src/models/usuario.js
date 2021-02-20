@@ -16,11 +16,11 @@ const usuarioModel = (conexion) => {
                 type: DataTypes.STRING(45),
                 allowNull: false
             },
-            usuario_apem: {
+            usuario_apep: {
                 type: DataTypes.STRING(45),
                 allowNull: false
             },
-            usuario_apep: {
+            usuario_apem: {
                 type: DataTypes.STRING(45),
                 allowNull: false
             },
@@ -71,7 +71,7 @@ const usuarioModel = (conexion) => {
             },
             usuario_estado: {
                 type: DataTypes.BOOLEAN,
-                defaulValue: true
+                defaultValue: true
             }
         },
         {
@@ -86,17 +86,8 @@ const usuarioModel = (conexion) => {
     usuario.prototype.generarJWT = function () {
         let payload = {
             id: this.usuario_id,
-            nombre: this.usuario_nombre,
-            apellidos: this.usuario_apep + " " + this.usuario_apem,
             email: this.usuario_email,
-            nacimiento: this.usuario_fechnac,
-            sexo: this.usuario_sexo,
-            dni: this.usuario_dni,
-            telefono: this.usuario_telefono,
-            foto: this.usuario_foto,
-            tipo: this.usuario_tipo,
-            direccion: this.usuario_direccion,
-            estado: this.usuario_estado
+            tipo: this.usuario_tipo
         }
 
         let password = process.env.JWT_SECRET || "INSBRUKCP";

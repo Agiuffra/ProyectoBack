@@ -5,8 +5,8 @@ const usuario_modelo = require('../models/usuario');
 const grado_modelo = require('../models/grado');
 const notas_modelo = require('../models/notas');
 
-const conexion = new Sequelize("na9kkt5s6a4b3xwx", "g6fcf6u46j9q49kv", "m5as8o1qp3pja0at", {
-    host: "qz8si2yulh3i7gl3.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+const conexion = new Sequelize("insbruk", "root", "Ut3c7599", {
+    host: "localhost",
     dialect: "mysql",
     timezone: "-05:00",
     logging: false,

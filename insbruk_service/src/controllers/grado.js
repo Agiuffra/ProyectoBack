@@ -1,4 +1,4 @@
-const { Grado } = require('../config/sequelize');
+const { Grado, Usuario, Curso, Notas } = require('../config/sequelize');
 const { Op } = require('sequelize');
 
 const crearGrado = async (req, res) => { 
@@ -30,6 +30,61 @@ const listarGrados = async (req, res) => {
             ok: false,
             message: "ha ocurrido un error al buscar los grados",
             content: gradosEncontrados
+        })
+    }
+}
+const listarGradosConAlumnos = async (req, res) => { 
+    try {
+        let { id } = req.params;
+        let gradosEncontrados = await Grado.findOne({
+            where: {
+                grado_id: id
+            },
+            include: {
+                model: Usuario,
+                include: {
+                    model: Notas
+                }
+            }
+        });
+        return res.json({
+            ok: true,
+            message: "imprimiento todos los grados",
+            content: gradosEncontrados
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error al buscar los grados",
+            content: error
+        })
+    }
+}
+const listarGradosConCursos = async (req, res) => {
+    try {
+        let { id } = req.params;
+        let gradosEncontrados = await Grado.findOne({
+            where: {
+                grado_id: id
+            },
+            include: {
+                model: Curso,
+                include: {
+                    model: Usuario,
+                    attributes: ['usuario_id','usuario_nombre','usuario_apep','usuario_apem']
+                }
+            }
+        });
+        return res.json({
+            ok: true,
+            message: "imprimiento todos los grados",
+            content: gradosEncontrados
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error al buscar los grados",
+            content: error
         })
     }
 }
@@ -89,6 +144,7 @@ module.exports = {
     crearGrado,
     listarGrados,
     listarGradoById,
-    editarGradoById
-
+    editarGradoById,
+    listarGradosConAlumnos,
+    listarGradosConCursos
 }

@@ -60,6 +60,31 @@ const validarProfe = (req, res, next) => {
   next();
 }
 
+const validarAlumno = (req, res, next) => {
+  let token = req.headers.authorization.split(" ")[1];
+  let respuesta = verificarToken(token);
+  // console.log(respuesta);
+  // req.alumno = respuesta.apellidos;
+  if (respuesta.tipo != "alumno") {
+    return res.status(401).json({
+      ok: false,
+      content: "No estas autorizado para realizar esta solicitud",
+    });
+  }
+  next();
+}
+
+const verificarPrimerRegistro = async (req, res, next) => {
+  let usuario = await Usuario.findAll();
+  if (usuario[0]) {
+    console.log("si hay usuarios");
+    validarAdmin(req, res, next);
+  } else {
+    console.log("no hay ningún usuario");
+    next();
+  }
+}
+
 const validarAdminAndProfe = (req, res, next) => {
   let token = req.headers.authorization.split(" ")[1];
   let respuesta = verificarToken(token);
@@ -74,9 +99,26 @@ const validarAdminAndProfe = (req, res, next) => {
   next();
 }
 
+const validarAlumnoAndProfe = (req, res, next) => {
+  let token = req.headers.authorization.split(" ")[1];
+  let respuesta = verificarToken(token);
+  console.log(respuesta.tipo);
+  if (respuesta.tipo != "profe" && respuesta.tipo != "alumno") {
+    console.log("no es profe o alumno");
+    return res.status(401).json({
+      ok: false,
+      content: "No estas autorizado para realizar esta solicitud",
+    });
+  }
+  next();
+}
+
 module.exports = {
   wachiman,
   validarAdmin,
   validarProfe,
-  validarAdminAndProfe
+  validarAdminAndProfe,
+  validarAlumnoAndProfe,
+  verificarPrimerRegistro,
+  validarAlumno
 };

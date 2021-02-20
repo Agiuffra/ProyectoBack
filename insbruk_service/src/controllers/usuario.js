@@ -2,6 +2,13 @@ const { Usuario, Notas, Curso } = require('../config/sequelize');
 const { subirArchivo, eliminarArchivoFirebase } = require('../utils/Firebase');
 const { Op } = require('sequelize');
 
+const loginValidator = async (req, res) => {
+    return res.json({
+        ok: true,
+        message: "usuario ya se encuentra registrado",
+        content: null
+    });
+}
 const registrarUsuario = async (req, res) => {
     try {
         let nuevoUser = Usuario.build(req.body);
@@ -67,6 +74,27 @@ const mostrarUsuarios = async (req, res) => {
         });
     }
 }
+const mostrarUsuariosByTipo = async (req, res) => {
+    try {
+        let { tipo } = req.params;
+        let usuariosEncontrados = await Usuario.findAll({
+            where: {
+                usuario_tipo: tipo
+            }
+        });
+        return res.json({
+            ok: true,
+            message: "imprimiendo usuarios",
+            content: usuariosEncontrados
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error al buscar los usuarios",
+            content: error
+        });
+    }
+}
 const mostrarUsuarioById = async (req, res) => {
     try {
         let { id } = req.params;
@@ -84,6 +112,27 @@ const mostrarUsuarioById = async (req, res) => {
         return res.status(500).json({
             ok: false,
             message: "ha ocurrido un error al buscar los usuarios",
+            content: error
+        });
+    }
+}
+const mostrarUsuarioByCorreo = async (req, res) => {
+    try {
+        let { correo } = req.params;
+        let usuarioEncontrado = await Usuario.findOne({
+            where: {
+                usuario_email: correo
+            }
+        });
+        return res.json({
+            ok: true,
+            message: "imprimiendo usuario encontrado",
+            content: usuarioEncontrado
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error al buscar el usuario",
             content: error
         });
     }
@@ -245,6 +294,36 @@ const verNotas = async (req, res) => {
     }
 
 }
+const editarNota = async (req, res) => {
+    try {
+        let { id } = req.params;
+        let notaEncontrada = await Notas.findByPk(id);
+        if (notaEncontrada) { 
+            await notaEncontrada.update(req.body, {
+                where: {
+                    notas_id: id
+                }
+            });
+            let notaActualizada = await Notas.findByPk(id);
+            return res.status(201).json({
+                ok: true,
+                message: "nota actualizada",
+                content: notaActualizada
+            });
+        }
+        return res.status(404).json({
+            ok: false,
+            message: "nota no encontrada",
+            content: null
+        });
+    } catch (error) {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error",
+            content: error
+        });
+    }
+}
 const subirFotoUsuario = async (req, res) => {
     try {
         let { id } = req.params;
@@ -291,10 +370,14 @@ module.exports = {
     registrarUsuario,
     loginUsuario,
     mostrarUsuarios,
+    mostrarUsuariosByTipo,
     mostrarUsuarioById,
+    mostrarUsuarioByCorreo,
     editarUsuarioById,
     eliminarUsuarioById,
     subirNotas,
     verNotas,
+    loginValidator,
     subirFotoUsuario,
+    editarNota,
 }

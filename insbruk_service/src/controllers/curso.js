@@ -1,4 +1,4 @@
-const { Curso } = require('../config/sequelize');
+const { Curso, Usuario, Grado } = require('../config/sequelize');
 const { Op } = require('sequelize');
 
 const crearCurso = (req, res) => {
@@ -17,7 +17,41 @@ const crearCurso = (req, res) => {
     });
 }
 const listarCursos = (req, res) => {
-    Curso.findAll().then((cursosEncontrados) => {
+    Curso.findAll({
+        include: [{
+            model: Usuario,
+            attributes: ['usuario_id','usuario_nombre','usuario_apep','usuario_apem']
+        },{
+            model: Grado,
+            attributes: ['grado_id','grado_nivel','grado_numero']
+        }]
+    }).then((cursosEncontrados) => {
+        return res.json({
+            ok: true,
+            message: "imprimiento los cursos encontrados",
+            content: cursosEncontrados
+        });
+    }).catch((error) => {
+        return res.status(500).json({
+            ok: false,
+            message: "ha ocurrido un error al buscar los cursos",
+            content: error
+        });
+    });
+}
+const listarCursosByUsuarioId = (req, res) => {
+    let { id } = req.params;
+    Curso.findAll({
+        where: {
+            usuario_id: id
+        },include: [{
+            model: Usuario,
+            attributes: ['usuario_id','usuario_nombre','usuario_apep','usuario_apem']
+        },{
+            model: Grado,
+            attributes: ['grado_id','grado_nivel','grado_numero']
+        }]
+    }).then((cursosEncontrados) => {
         return res.json({
             ok: true,
             message: "imprimiento los cursos encontrados",
@@ -36,7 +70,13 @@ const listarCursoById = (req, res) => {
     Curso.findOne({
         where: {
             curso_id: id
-        }
+        },include: [{
+            model: Usuario,
+            attributes: ['usuario_id','usuario_nombre','usuario_apep','usuario_apem']
+        },{
+            model: Grado,
+            attributes: ['grado_id','grado_nivel','grado_numero']
+        }]
     }).then((cursosEncontrados) => {
         return res.json({
             ok: true,
@@ -85,6 +125,7 @@ const editarCursoById = async (req, res) => {
 module.exports = {
     crearCurso,
     listarCursos,
+    listarCursosByUsuarioId,
     listarCursoById,
     editarCursoById
 }
